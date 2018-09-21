@@ -39,6 +39,9 @@ public class GXAExperiment {
 	List<String[]> rowTable = null;
 	List<String[]> colTable = null;
 	MatrixMarket mtx = null;
+	GXAEntry gxaEntry = null;
+	String accession = null;
+
 	final GXAManager gxaManager;
 	final MTXManager mtxManager;
 
@@ -47,7 +50,11 @@ public class GXAExperiment {
 		this.mtxManager = manager.getMTXManager();
 	}
 
-	public void fetchMTX (String accession, TaskMonitor monitor) {
+	public MatrixMarket getMatrix() { return mtx; }
+	public String getAccession() { return accession; }
+
+	public void fetchMTX (final String accession, final TaskMonitor monitor) {
+		this.accession = accession;
 		// Get the URI
 		String fetchString = String.format(GXA_MTX_URI, accession);
 
@@ -89,6 +96,7 @@ public class GXAExperiment {
 			}
 		} catch (Exception e) {}
 		gxaManager.addExperiment(accession, this);
+		gxaEntry = gxaManager.getGXAEntry(accession); 
 		mtxManager.addMatrix(mtx.toString(), mtx);
 	}
 
@@ -107,5 +115,9 @@ public class GXAExperiment {
 			response1.close();
 		}
 		return stream;
+	}
+
+	public String toString() {
+		return gxaEntry.toString();
 	}
 }

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.ucsf.rbvi.gxaReader.internal.model.MTXManager;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
+import edu.ucsf.rbvi.gxaReader.internal.tasks.GXACreateTableTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAShowResultsTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.MTXCreateTableTaskFactory;
@@ -83,7 +84,7 @@ public class CyActivator extends AbstractCyActivator {
 			mtxGetValueProps.setProperty(TITLE, "Get value from matrix");
 			registerService(bc, mtxGetValueTaskFactory, TaskFactory.class, mtxGetValueProps);
 		}
-		
+
 		{
 			final GXAFetchTaskFactory gxaFetchTaskFactory = new GXAFetchTaskFactory(gxaManager);
 			Properties gxaFetchProps = new Properties();
@@ -91,13 +92,21 @@ public class CyActivator extends AbstractCyActivator {
 			gxaFetchProps.setProperty(TITLE, "Fetch an Experiment from EBI");
 			registerService(bc, gxaFetchTaskFactory, TaskFactory.class, gxaFetchProps);
 		}
-		
+
 		{
 			final GXAShowResultsTaskFactory gxaResultsTaskFactory = new GXAShowResultsTaskFactory(gxaManager);
 			Properties gxaResultsProps = new Properties();
 			gxaResultsProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
 			gxaResultsProps.setProperty(TITLE, "Show Experiment Results from EBI");
 			registerService(bc, gxaResultsTaskFactory, TaskFactory.class, gxaResultsProps);
+		}
+
+		{
+			final GXACreateTableTaskFactory gxaCreateTableFactory = new GXACreateTableTaskFactory(gxaManager);
+			Properties gxaTableProps = new Properties();
+			gxaTableProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
+			gxaTableProps.setProperty(TITLE, "Create table from Experiment");
+			registerService(bc, gxaCreateTableFactory, TaskFactory.class, gxaTableProps);
 		}
 
 	}

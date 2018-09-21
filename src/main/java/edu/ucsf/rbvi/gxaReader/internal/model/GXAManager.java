@@ -63,6 +63,10 @@ public class GXAManager {
 		return null;
 	}
 
+	public List<GXAExperiment> getExperiments() {
+		return new ArrayList<>(gxaMap.values());
+	}
+
 	public Set<String> getExperimentAccessions() {
 		return gxaMap.keySet();
 	}
@@ -74,6 +78,12 @@ public class GXAManager {
 	}
 
 	public List<GXAEntry> getGXAEntries() { return new ArrayList<>(entryMap.values()); }
+
+	public GXAEntry getGXAEntry(String accession) {
+		if (entryMap.containsKey(accession))
+			return entryMap.get(accession);
+		return null;
+	}
 
 	public Set<String> getSpecies() {
 		return speciesMap.keySet();
