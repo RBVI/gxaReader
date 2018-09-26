@@ -43,11 +43,18 @@ public class GXAExperiment {
 	String accession = null;
 
 	final GXAManager gxaManager;
+	final GXACluster gxaCluster;
+	final GXAIDF gxaIDF;
+	final GXADesign gxaDesign;
+
 	final MTXManager mtxManager;
 
 	public GXAExperiment (GXAManager manager) {
 		this.gxaManager = manager;
 		this.mtxManager = manager.getMTXManager();
+		gxaCluster = new GXACluster(gxaManager);
+		gxaIDF = new GXAIDF(gxaManager);
+		gxaDesign = new GXADesign(gxaManager);
 	}
 
 	public MatrixMarket getMatrix() { return mtx; }
