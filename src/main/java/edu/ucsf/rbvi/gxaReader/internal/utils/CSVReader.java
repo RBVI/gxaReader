@@ -7,14 +7,15 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import org.cytoscape.work.TaskMonitor;
 
@@ -55,6 +56,37 @@ public class CSVReader {
 
 		taskMonitor.showMessage(TaskMonitor.Level.INFO, "Found "+rowList.size()+" rows with "+rowList.get(0).length+" labels each");
 		return rowList;
+	}
+
+	public static List<String[]> readCSVFromHTTP(TaskMonitor taskMonitor, 
+	                                             String URI, String accession) {
+		List<String[]> input = null;
+		String fetchString = String.format(URI, accession);
+		try {
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			HttpGet httpGet = new HttpGet(fetchString);
+			CloseableHttpResponse response1 = httpclient.execute(httpGet);
+			if (response1.getStatusLine().getStatusCode() != 200) {
+				taskMonitor.showMessage(TaskMonitor.Level.ERROR, 
+				                        "Error return from '"+fetchString+"': "+response1.getStatusLine());
+				return null;
+			}
+			HttpEntity entity1 = response1.getEntity();
+
+			try {
+				InputStream inputStream = entity1.getContent();
+				input = readCSV(taskMonitor, inputStream, accession);
+				inputStream.close();
+			} catch (Exception e) {
+				taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error reading from '"+fetchString+"': "+e.getMessage());
+			} finally {
+				response1.close();
+			}
+		} catch (Exception e) {
+			taskMonitor.showMessage(TaskMonitor.Level.ERROR, 
+			                        "Error attempting to fetch '"+fetchString+"': "+e.getMessage());
+		}
+		return input;
 	}
 
 	private static String[] readRow(BufferedReader input) throws IOException {

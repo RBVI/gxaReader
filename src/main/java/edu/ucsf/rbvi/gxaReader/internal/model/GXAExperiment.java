@@ -36,25 +36,21 @@ import edu.ucsf.rbvi.gxaReader.internal.utils.CSVReader;
 public class GXAExperiment {
 	public static String GXA_MTX_URI = "https://www.ebi.ac.uk/gxa/sc/experiment/%s/download/zip?fileType=quantification-filtered";
 
+	String accession = null;
 	List<String[]> rowTable = null;
 	List<String[]> colTable = null;
 	MatrixMarket mtx = null;
 	GXAEntry gxaEntry = null;
-	String accession = null;
+	GXACluster gxaCluster = null;
+	GXAIDF gxaIDF = null;
+	GXADesign gxaDesign = null;
 
 	final GXAManager gxaManager;
-	final GXACluster gxaCluster;
-	final GXAIDF gxaIDF;
-	final GXADesign gxaDesign;
-
 	final MTXManager mtxManager;
 
 	public GXAExperiment (GXAManager manager) {
 		this.gxaManager = manager;
 		this.mtxManager = manager.getMTXManager();
-		gxaCluster = new GXACluster(gxaManager);
-		gxaIDF = new GXAIDF(gxaManager);
-		gxaDesign = new GXADesign(gxaManager);
 	}
 
 	public MatrixMarket getMatrix() { return mtx; }
@@ -105,6 +101,21 @@ public class GXAExperiment {
 		gxaManager.addExperiment(accession, this);
 		gxaEntry = gxaManager.getGXAEntry(accession); 
 		mtxManager.addMatrix(mtx.toString(), mtx);
+	}
+
+	public void fetchClusters (final TaskMonitor monitor) {
+		gxaCluster =  GXACluster.fetchCluster(gxaManager, accession, monitor);
+
+		// Sanity check
+	}
+
+	public void fetchDesign (final TaskMonitor monitor) {
+		gxaDesign =  GXADesign.fetchDesign(gxaManager, accession, monitor);
+
+		// Sanity check
+	}
+
+	public void fetchIDF (final TaskMonitor monitor) {
 	}
 
 	public ZipInputStream getZipStream(String uri, TaskMonitor monitor) throws Exception {

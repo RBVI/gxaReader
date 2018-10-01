@@ -35,6 +35,8 @@ import edu.ucsf.rbvi.gxaReader.internal.model.MTXManager;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXACreateTableTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchTaskFactory;
+import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchClustersTaskFactory;
+import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchDesignTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAShowResultsTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.MTXCreateTableTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.MTXGetValueTaskFactory;
@@ -91,6 +93,22 @@ public class CyActivator extends AbstractCyActivator {
 			gxaFetchProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
 			gxaFetchProps.setProperty(TITLE, "Fetch an Experiment from EBI");
 			registerService(bc, gxaFetchTaskFactory, TaskFactory.class, gxaFetchProps);
+		}
+
+		{
+			final GXAFetchClustersTaskFactory gxaFetchClustersTaskFactory = new GXAFetchClustersTaskFactory(gxaManager);
+			Properties gxaFetchClustersProps = new Properties();
+			gxaFetchClustersProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
+			gxaFetchClustersProps.setProperty(TITLE, "Fetch Clusters for an Experiment");
+			registerService(bc, gxaFetchClustersTaskFactory, TaskFactory.class, gxaFetchClustersProps);
+		}
+
+		{
+			final GXAFetchDesignTaskFactory gxaFetchDesignTaskFactory = new GXAFetchDesignTaskFactory(gxaManager);
+			Properties gxaFetchDesignProps = new Properties();
+			gxaFetchDesignProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
+			gxaFetchDesignProps.setProperty(TITLE, "Fetch Design for an Experiment");
+			registerService(bc, gxaFetchDesignTaskFactory, TaskFactory.class, gxaFetchDesignProps);
 		}
 
 		{
