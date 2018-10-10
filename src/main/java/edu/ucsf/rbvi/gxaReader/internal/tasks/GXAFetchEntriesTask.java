@@ -24,9 +24,11 @@ public class GXAFetchEntriesTask extends AbstractTask {
 
 	@Override
 	public void run(TaskMonitor taskMonitor) {
+		taskMonitor.setTitle(getTitle());
+		taskMonitor.setStatusMessage("Fetching all GXA entries");
 		gxaManager.loadGXAEntries(taskMonitor);
 	}
- 
+
 	@ProvidesTitle
 	public String getTitle() {return "GXA Fetch Entries";}
 }

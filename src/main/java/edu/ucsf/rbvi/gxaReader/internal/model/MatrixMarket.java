@@ -154,7 +154,6 @@ public class MatrixMarket {
 
 	public MatrixMarket(final MTXManager manager, 
 	                    List<String[]> rowTable, List<String[]> colTable) {
-		System.out.println("MTXConstructor");
 		this.mtxManager = manager;
 		this.rowTable = rowTable;
 		this.colTable = colTable;
@@ -191,9 +190,13 @@ public class MatrixMarket {
 	public int getNonZeroCount() { return nonZeros; }
 	public boolean isTransposed() { return transposed; }
 	public void setTranspose(boolean t) { transposed = t; }
-	public List<String> getRowLabels() { return rowLabels; }
+	public List<String> getRowLabels() { 
+		return transposed ? colLabels : rowLabels;
+	}
 	public void setRowLabels(List<String> rLabels) { rowLabels = rLabels; }
-	public List<String> getColLabels() { return colLabels; }
+	public List<String> getColLabels() { 
+		return transposed ? rowLabels : colLabels;
+	}
 	public void setColLabels(List<String> cLabels) { colLabels = cLabels; }
 	public void setRowTable(List<String[]> rTable) { 
 		this.rowTable = rTable; 
@@ -204,6 +207,14 @@ public class MatrixMarket {
 		this.colLabels = getLabels(colTable);
 	}
 
+	public String getRowLabel(int row) {
+		return transposed ? colLabels.get(row) : rowLabels.get(row);
+	}
+
+	public String getColumnLabel(int col) {
+		return transposed ? rowLabels.get(col) : colLabels.get(col);
+	}
+
 	public void readMTX(TaskMonitor taskMonitor, File mmInputName) throws FileNotFoundException, IOException {
 		FileInputStream inputStream = new FileInputStream(mmInputName);
 		readMTX(taskMonitor, inputStream, mmInputName.getName());
@@ -212,14 +223,14 @@ public class MatrixMarket {
 	public void readMTX(TaskMonitor taskMonitor, InputStream stream, String mmInputName) throws FileNotFoundException, IOException {
 		this.name = mmInputName;
 
-		System.out.println("Reading "+name);
+		//System.out.println("Reading "+name);
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		// Read the first line
 		String header = reader.readLine();
 		parseHeader(header);
 
-		System.out.println("Got header");
+		//System.out.println("Got header");
 
 		// Now, read until we find the dimensions
 		comments = new ArrayList<>();
@@ -235,8 +246,8 @@ public class MatrixMarket {
 		String[] dims = line.split("\\s+");
 		nRows = Integer.parseInt(dims[0]);
 		nCols = Integer.parseInt(dims[1]);
-		System.out.println("nRows = "+nRows);
-		System.out.println("nCols = "+nCols);
+		//System.out.println("nRows = "+nRows);
+		//System.out.println("nCols = "+nCols);
 		if (format == MTXFORMAT.ARRAY) {
 			if (type == MTXTYPE.REAL) {
 				doubleMatrix = new double[nRows][nCols];
@@ -526,11 +537,12 @@ public class MatrixMarket {
 	}
 
 	private int findIndex(int row, int col) {
-		// System.out.println("findIndex("+row+","+col+")");
+		//System.out.println("findIndex("+row+","+col+")");
 		int index1 = colIndex[col];
-		// System.out.println("index1="+index1);
+		//System.out.println("index1="+index1);
 		if (index1 < 0) return Integer.MIN_VALUE;
 		int index2 = colIndex[++col];
+		//System.out.println("index2="+index2);
 
 		int indexMid = index1+(index2-index1)/2;
 		int index = -1;
@@ -539,16 +551,26 @@ public class MatrixMarket {
 			if (index == -2) {
 				index2 = indexMid;
 				indexMid = index1+(index2-index1)/2;
+				if (index2 == indexMid)
+					return -1;
 			} else if (index == -1) {
 				index1 = indexMid;
 				indexMid = index1+(index2-index1)/2;
+				if (index1 == indexMid)
+					return -1;
 			}
 		}
+		//System.out.println("index="+index);
 		return index;
 	}
 
 	private int compare(int index1, int index2, int indexMid, int row) {
-		// System.out.println("index1="+index1+", index2="+index2+", indexMid="+indexMid+", row = "+row);
+		/*
+		System.out.println("index1="+index1+", index2="+index2+", indexMid="+indexMid+", row = "+row);
+		System.out.println("intMatrix[index1] = "+intMatrix[index1][0]);
+		System.out.println("intMatrix[indexMid] = "+intMatrix[indexMid][0]);
+		System.out.println("intMatrix[index2] = "+intMatrix[index2][0]);
+		*/
 		if (intMatrix[index1][0] < row && intMatrix[indexMid][0] > row)
 			return -2;
 		if (intMatrix[indexMid][0] < row && intMatrix[index2][0] > row)

@@ -40,7 +40,6 @@ public class GXAFetchTask extends AbstractTask implements RequestsUIHelper {
 			return accession;
 
 		String sp = species.getSelectedValue();
-		System.out.println("getAccession: species = "+sp);
 		if (species == null || sp == null)
 			accession = new ListSingleSelection<GXAEntry>(gxaManager.getGXAEntries());
 		else
@@ -59,12 +58,8 @@ public class GXAFetchTask extends AbstractTask implements RequestsUIHelper {
 
 	public GXAFetchTask(final GXAManager gxaManager) {
 		this.gxaManager = gxaManager;
-		System.out.println("Found "+gxaManager.getSpecies().size()+" species");
 		if (gxaManager.getSpecies().size() > 0)
 			species = new ListSingleSelection<String>(new ArrayList<>(gxaManager.getSpecies()));
-
-		// accession = new ListSingleSelection<GXAEntry>(gxaManager.getGXAEntries());
-
 	}
 
 	@Override

@@ -5,18 +5,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.command.AvailableCommands;
 import org.cytoscape.command.CommandExecutorTaskFactory;
 import org.cytoscape.service.util.CyServiceRegistrar;
+import org.cytoscape.work.TaskFactory;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import edu.ucsf.rbvi.gxaReader.internal.utils.HTTPUtils;
+import edu.ucsf.rbvi.gxaReader.internal.view.GXAEntryComponent;
 
 public class GXAManager {
 	final public static String EXPERIMENTS_URL = "https://www.ebi.ac.uk/gxa/sc/json/experiments";
@@ -31,6 +36,8 @@ public class GXAManager {
 	final CyServiceRegistrar registrar;
 	final MTXManager mtxManager;
 	final Map<String, GXAEntry> entryMap;
+
+	GXAEntryComponent gxaEntryComponent = null;
 
 	public GXAManager(final CyServiceRegistrar registrar, final MTXManager mtxManager) {
 		gxaMap = new HashMap<>();
@@ -123,6 +130,34 @@ public class GXAManager {
 
 	public void executeCommand(String namespace, String command, Map<String, Object> args) {
 		taskManager.execute(ceTaskFactory.createTaskIterator(namespace, command, args, null));
+	}
+
+	public void executeTasks(TaskIterator tasks) {
+		taskManager.execute(tasks);
+	}
+
+	public void executeTask(TaskFactory factory) {
+		taskManager.execute(factory.createTaskIterator());
+	}
+
+	public <S> S getService(Class<S> serviceClass) {
+		return registrar.getService(serviceClass);
+	}
+
+	public <S> S getService(Class<S> serviceClass, String filter) {
+		return registrar.getService(serviceClass, filter);
+	}
+
+	public void registerService(Object service, Class<?> serviceClass, Properties props) {
+		registrar.registerService(service, serviceClass, props);
+	}
+
+	public void showEntriesTable(boolean show) {
+		if (gxaEntryComponent == null && show) {
+			gxaEntryComponent = new GXAEntryComponent(this);
+			registrar.registerService(gxaEntryComponent, CytoPanelComponent.class, new Properties());
+		}
+
 	}
 
 	public MTXManager getMTXManager() { return mtxManager; }

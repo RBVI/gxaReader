@@ -13,6 +13,7 @@ import static org.cytoscape.work.ServiceProperties.TITLE;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CytoPanelComponent2;
 import org.cytoscape.io.BasicCyFileFilter;
 import org.cytoscape.io.DataCategory;
 import org.cytoscape.io.read.InputStreamTaskFactory;
@@ -37,6 +38,7 @@ import edu.ucsf.rbvi.gxaReader.internal.tasks.GXACreateTableTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchClustersTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAFetchDesignTaskFactory;
+import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAShowEntriesTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.GXAShowResultsTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.MTXCreateTableTaskFactory;
 import edu.ucsf.rbvi.gxaReader.internal.tasks.MTXGetValueTaskFactory;
@@ -125,6 +127,14 @@ public class CyActivator extends AbstractCyActivator {
 			gxaTableProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
 			gxaTableProps.setProperty(TITLE, "Create table from Experiment");
 			registerService(bc, gxaCreateTableFactory, TaskFactory.class, gxaTableProps);
+		}
+
+		{
+			final GXAShowEntriesTaskFactory gxaShowEntries = new GXAShowEntriesTaskFactory(gxaManager);
+			Properties gxaShowEntriesProps = new Properties();
+			gxaShowEntriesProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
+			gxaShowEntriesProps.setProperty(TITLE, "Show GXA Experiments Table");
+			registerService(bc, gxaShowEntries, TaskFactory.class, gxaShowEntriesProps);
 		}
 
 	}
