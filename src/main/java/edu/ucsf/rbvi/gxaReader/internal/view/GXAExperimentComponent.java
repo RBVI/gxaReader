@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 
 import org.cytoscape.application.swing.CytoPanelComponent2;
 import org.cytoscape.application.swing.CytoPanelName;
@@ -41,6 +42,7 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 
 		IconManager iconManager = gxaManager.getService(IconManager.class);
     iconFont = iconManager.getIconFont(22.0f);
+		this.setLayout(new BorderLayout());
 		init();
 	}
 
@@ -91,10 +93,10 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 		 				new GXAExperimentTableModel(gxaManager, gxaExperiment);
 		JTable gxaExperimentTable = new GXAExperimentTable(gxaManager, tableModel);
 
-		JPanel mainPanel = new JPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(gxaExperimentTable);
-		mainPanel.setLayout(new GridLayout(1, 1));
-		mainPanel.add(scrollPane, BorderLayout.CENTER);
-		this.add(mainPanel, BorderLayout.CENTER);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		this.add(scrollPane, BorderLayout.CENTER);
+		this.revalidate();
+		this.repaint();
 	}
 }
