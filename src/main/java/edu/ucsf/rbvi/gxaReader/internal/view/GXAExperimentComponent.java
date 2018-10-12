@@ -32,6 +32,7 @@ import edu.ucsf.rbvi.gxaReader.internal.model.GXADesign;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperiment;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperimentTableModel;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
+import edu.ucsf.rbvi.gxaReader.internal.model.GXASubTableModel;
 
 public class GXAExperimentComponent extends JPanel implements CytoPanelComponent2 {
 	final GXAManager gxaManager;
@@ -151,7 +152,7 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 		this.repaint();
 	}
 
-	public void showTable(String title, TableModel model, GXAExperiment experiment) {
+	public void showTable(String title, GXASubTableModel model, GXAExperiment experiment) {
 		JTable table = new SimpleTable(gxaManager, model);
 		new TableFrame (gxaManager, table, title);
 	}

@@ -79,11 +79,9 @@ public class GXADesign {
 		return tableModel;
 	}
 
-	public class GXADesignTableModel extends AbstractTableModel {
+	public class GXADesignTableModel extends GXASubTableModel {
 		final GXADesign design;
 		final GXAExperiment experiment;
-		int nrows;
-		int ncols;
 
 		GXADesignTableModel(final GXADesign design) {
 			super();
@@ -92,6 +90,7 @@ public class GXADesign {
 			// NOTE: we're pivoting the table!
 			ncols = design.rows.size();
 			nrows = design.columns.length-1;
+			hdrCols = 1;
 		}
 
 		@Override
@@ -100,7 +99,10 @@ public class GXADesign {
 		@Override
 		public String getColumnName(int column) {
 			if (column == 0) return "Characteristic/Factor";
-			return strip(design.rows.get(column-1)[0]);
+			if (columnIndex == null) 
+				return strip(design.rows.get(column-1)[0]);
+			else
+				return strip(design.rows.get(columnIndex[column]-1)[0]);
 		}
 
 		@Override
@@ -109,7 +111,7 @@ public class GXADesign {
 		}
 
 		@Override
-		public Class getColumnClass(int column) {
+		public Class<?> getColumnClass(int column) {
 			return String.class;
 		}
 
@@ -118,7 +120,11 @@ public class GXADesign {
 			if (column == 0) {
 				return strip(columns[row+1]);
 			}
-			String[] line = rows.get(column+1);
+
+			if (columnIndex != null)
+				column = columnIndex[column-1];
+
+			String[] line = rows.get(column);
 			return strip(line[row+1]);
 		}
 

@@ -1,6 +1,7 @@
 package edu.ucsf.rbvi.gxaReader.internal.model;
 
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -114,11 +115,9 @@ public class GXACluster {
 		return tableModel;
 	}
 
-	public class GXAClusterTableModel extends AbstractTableModel {
+	public class GXAClusterTableModel extends GXASubTableModel {
 		final GXACluster cluster;
 		final GXAExperiment experiment;
-		int nrows;
-		int ncols;
 
 		GXAClusterTableModel(final GXACluster cluster) {
 			super();
@@ -126,6 +125,9 @@ public class GXACluster {
 			this.experiment = cluster.experiment;
 			nrows = cluster.clusters[0].length-1;
 			ncols = headers.length;
+			// System.out.println("ncols = "+ncols+", nrows = "+nrows);
+			// System.out.println("clusters.length = "+cluster.clusters.length);
+			hdrCols = 2;
 		}
 
 		@Override
@@ -133,7 +135,10 @@ public class GXACluster {
 
 		@Override
 		public String getColumnName(int column) {
-			return headers[column];
+			if (columnIndex != null)
+				return headers[columnIndex[column]];
+			else
+				return headers[column];
 		}
 
 		@Override
@@ -153,14 +158,18 @@ public class GXACluster {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			//System.out.println("getValueAt: "+row+","+column);
+			// System.out.println("getValueAt: "+row+","+column);
 			switch (column) {
 				case 0:
 					return (row+cluster.minK) == k ? "True" : "False";
 				case 1:
 					return row+cluster.minK;
 				default:
-					int value = cluster.clusters[column][row];
+					int value;
+					if (columnIndex != null)
+						value = cluster.clusters[columnIndex[column]-2][row];
+					else
+						value = cluster.clusters[column-2][row];
 					return new Integer(value);
 			}
 		}

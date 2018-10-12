@@ -10,23 +10,25 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
+import edu.ucsf.rbvi.gxaReader.internal.model.GXASubTableModel;
 
 public class SimpleTable extends JTable {
 	final GXAManager gxaManager;
-	int specialRow;
+	final GXASubTableModel tableModel;
 
 	static Color alternateColor = new Color(234,255,234);
 
-	public SimpleTable (final GXAManager gxaManager, TableModel tableModel) {
+	public SimpleTable (final GXAManager gxaManager, final GXASubTableModel tableModel) {
 		super(tableModel);
 		this.gxaManager = gxaManager;
-		this.specialRow = specialRow;
+		this.tableModel = tableModel;
 
 		this.setAutoCreateRowSorter(true);
 		this.setAutoCreateColumnsFromModel(true);
@@ -43,7 +45,31 @@ public class SimpleTable extends JTable {
 		header.setDefaultRenderer(new HeaderRenderer(this));
 		header.setFont(new Font("SansSerif", Font.BOLD, 10));
 
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent mouseEvent) {
+				JTable table = (JTable) mouseEvent.getSource();
+				Point point = mouseEvent.getPoint();
+				int row = table.rowAtPoint(point);
+				int col = table.columnAtPoint(point);
+				if (col != 0) return;
+				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					tableModel.sortColumns(row);
+				}
+			}
+		});
+
 		doLayout();
+	}
+
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		super.tableChanged(e);
+		if (tableModel == null) return;
+		TableColumnModel columnModel = getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(100);
+		for (int col = 1; col < tableModel.getColumnCount(); col++) {
+			columnModel.getColumn(col).setPreferredWidth(100);
+		}
 	}
 
 	@Override
