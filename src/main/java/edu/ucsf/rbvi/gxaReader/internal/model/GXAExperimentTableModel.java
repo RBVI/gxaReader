@@ -20,7 +20,6 @@ public class GXAExperimentTableModel extends AbstractTableModel {
 		this.gxaManager = gxaManager;
 		this.gxaExperiment = experiment;
 		this.matrixMarket = experiment.getMatrix();
-		System.out.println("matrix has "+matrixMarket.getNRows()+" rows and "+matrixMarket.getNCols()+" columns");
 	}
 
 	@Override

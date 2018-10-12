@@ -152,6 +152,10 @@ public class GXAManager {
 		registrar.registerService(service, serviceClass, props);
 	}
 
+	public void unregisterService(Object service, Class<?> serviceClass) {
+		registrar.unregisterService(service, serviceClass);
+	}
+
 	public void showEntriesTable(boolean show) {
 		if (gxaEntryComponent == null && show) {
 			gxaEntryComponent = new GXAEntryComponent(this);

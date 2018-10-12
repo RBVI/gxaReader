@@ -39,7 +39,7 @@ public class GXAEntryTable extends JTable {
 
 	static String[] columnNames = {"Loaded", "Experiment", "Assays", "Comparisons", "Organisms", "Experimental Variables"};
 
-	static Color alternateColor = new Color(224,255,224);
+	static Color alternateColor = new Color(234,255,234);
 
 	public GXAEntryTable (final GXAManager gxaManager, GXAEntryTableModel tableModel) {
 		super(tableModel);
@@ -106,6 +106,8 @@ public class GXAEntryTable extends JTable {
 			// Register an Experiment Table
 			CytoPanelComponent component = new GXAExperimentComponent(gxaManager, experiment);
 			gxaManager.registerService(component, CytoPanelComponent.class, new Properties());
+			experiment.fetchClusters();
+			experiment.fetchDesign();
 		}
 	}
 

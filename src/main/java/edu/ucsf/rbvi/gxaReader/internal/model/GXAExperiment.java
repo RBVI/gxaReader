@@ -23,7 +23,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
+import org.cytoscape.application.CyUserLog;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.CyTableFactory;
@@ -35,6 +37,7 @@ import edu.ucsf.rbvi.gxaReader.internal.utils.CSVReader;
 
 public class GXAExperiment {
 	public static String GXA_MTX_URI = "https://www.ebi.ac.uk/gxa/sc/experiment/%s/download/zip?fileType=quantification-filtered";
+	final Logger logger;
 
 	String accession = null;
 	List<String[]> rowTable = null;
@@ -47,14 +50,23 @@ public class GXAExperiment {
 
 	final GXAManager gxaManager;
 	final MTXManager mtxManager;
+	final GXAExperiment gxaExperiment;
 
 	public GXAExperiment (GXAManager manager) {
 		this.gxaManager = manager;
 		this.mtxManager = manager.getMTXManager();
+		logger = Logger.getLogger(CyUserLog.NAME);
+		this.gxaExperiment = this;
 	}
 
 	public MatrixMarket getMatrix() { return mtx; }
 	public String getAccession() { return accession; }
+
+	public List<String[]> getColumnLabels() { return colTable; }
+	public List<String[]> getRowLabels() { return rowTable; }
+
+	public GXACluster getClusters() { return gxaCluster; }
+	public GXADesign getDesign() { return gxaDesign; }
 
 	public void fetchMTX (final String accession, final TaskMonitor monitor) {
 		this.accession = accession;
@@ -104,15 +116,23 @@ public class GXAExperiment {
 	}
 
 	public void fetchClusters (final TaskMonitor monitor) {
-		gxaCluster =  GXACluster.fetchCluster(gxaManager, accession, monitor);
+		gxaCluster =  GXACluster.fetchCluster(gxaManager, accession, this, monitor);
 
 		// Sanity check
 	}
 
+	public void fetchClusters () {
+		new Thread(new FetchClusterThread()).start();
+	}
+
 	public void fetchDesign (final TaskMonitor monitor) {
-		gxaDesign =  GXADesign.fetchDesign(gxaManager, accession, monitor);
+		gxaDesign =  GXADesign.fetchDesign(gxaManager, accession, this, monitor);
 
 		// Sanity check
+	}
+
+	public void fetchDesign () {
+		new Thread(new FetchDesignThread()).start();
 	}
 
 	public void fetchIDF (final TaskMonitor monitor) {
@@ -137,5 +157,19 @@ public class GXAExperiment {
 
 	public String toString() {
 		return gxaEntry.toString();
+	}
+
+	class FetchClusterThread implements Runnable {
+		@Override
+		public void run() {
+			gxaCluster =  GXACluster.fetchCluster(gxaManager, accession, gxaExperiment, null);
+		}
+	}
+
+	class FetchDesignThread implements Runnable {
+		@Override
+		public void run() {
+			gxaDesign =  GXADesign.fetchDesign(gxaManager, accession, gxaExperiment, null);
+		}
 	}
 }

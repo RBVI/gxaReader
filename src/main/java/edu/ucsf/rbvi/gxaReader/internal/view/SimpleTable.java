@@ -13,26 +13,20 @@ import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
-import org.cytoscape.model.CyTable;
-import org.cytoscape.work.AbstractTask;
-import org.cytoscape.work.Task;
-import org.cytoscape.work.TaskIterator;
-import org.cytoscape.work.TaskFactory;
-import org.cytoscape.work.TaskMonitor;
-
-import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperiment;
-import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperimentTableModel;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
 
-public class GXAExperimentTable extends JTable {
+public class SimpleTable extends JTable {
 	final GXAManager gxaManager;
+	int specialRow;
 
 	static Color alternateColor = new Color(234,255,234);
 
-	public GXAExperimentTable (final GXAManager gxaManager, GXAExperimentTableModel tableModel) {
+	public SimpleTable (final GXAManager gxaManager, TableModel tableModel) {
 		super(tableModel);
 		this.gxaManager = gxaManager;
+		this.specialRow = specialRow;
 
 		this.setAutoCreateRowSorter(true);
 		this.setAutoCreateColumnsFromModel(true);

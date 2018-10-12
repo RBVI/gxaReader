@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +18,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import org.cytoscape.application.CyUserLog;
 import org.cytoscape.work.TaskMonitor;
 
 import edu.ucsf.rbvi.gxaReader.internal.model.MatrixMarket;
@@ -24,13 +26,14 @@ import edu.ucsf.rbvi.gxaReader.internal.model.MTXManager;
 
 public class CSVReader {
 	public static String delimiter = null;
+	static Logger logger = Logger.getLogger(CyUserLog.NAME);
 
 	public static List<String[]> readCSV(TaskMonitor taskMonitor, String name) throws IOException, FileNotFoundException {
 		return readCSV(taskMonitor, new File(name));
 	}
 
 	public static List<String[]> readCSV(TaskMonitor taskMonitor, File name) throws IOException, FileNotFoundException {
-		taskMonitor.showMessage(TaskMonitor.Level.INFO, "Reading CSV file '"+name.toString()+"'");
+		log(taskMonitor, TaskMonitor.Level.INFO, "Reading CSV file '"+name.toString()+"'");
 
 		// Open the file
 		BufferedReader input = new BufferedReader(new FileReader(name));
@@ -38,7 +41,7 @@ public class CSVReader {
 	}
 
 	public static List<String[]> readCSV(TaskMonitor taskMonitor, InputStream stream, String name) throws IOException {
-		taskMonitor.showMessage(TaskMonitor.Level.INFO, "Reading CSV file '"+name.toString()+"'");
+		log(taskMonitor, TaskMonitor.Level.INFO, "Reading CSV file '"+name.toString()+"'");
 		BufferedReader input = new BufferedReader(new InputStreamReader(stream));
 		return readCSV(taskMonitor, input);
 	}
@@ -54,7 +57,7 @@ public class CSVReader {
 			rowList.add(row);
 		} while (true);
 
-		taskMonitor.showMessage(TaskMonitor.Level.INFO, "Found "+rowList.size()+" rows with "+rowList.get(0).length+" labels each");
+		log(taskMonitor, TaskMonitor.Level.INFO, "Found "+rowList.size()+" rows with "+rowList.get(0).length+" labels each");
 		return rowList;
 	}
 
@@ -67,8 +70,8 @@ public class CSVReader {
 			HttpGet httpGet = new HttpGet(fetchString);
 			CloseableHttpResponse response1 = httpclient.execute(httpGet);
 			if (response1.getStatusLine().getStatusCode() != 200) {
-				taskMonitor.showMessage(TaskMonitor.Level.ERROR, 
-				                        "Error return from '"+fetchString+"': "+response1.getStatusLine());
+				log(taskMonitor, TaskMonitor.Level.ERROR, 
+				    "Error return from '"+fetchString+"': "+response1.getStatusLine());
 				return null;
 			}
 			HttpEntity entity1 = response1.getEntity();
@@ -78,13 +81,13 @@ public class CSVReader {
 				input = readCSV(taskMonitor, inputStream, accession);
 				inputStream.close();
 			} catch (Exception e) {
-				taskMonitor.showMessage(TaskMonitor.Level.ERROR, "Error reading from '"+fetchString+"': "+e.getMessage());
+				log(taskMonitor, TaskMonitor.Level.ERROR, "Error reading from '"+fetchString+"': "+e.getMessage());
 			} finally {
 				response1.close();
 			}
 		} catch (Exception e) {
-			taskMonitor.showMessage(TaskMonitor.Level.ERROR, 
-			                        "Error attempting to fetch '"+fetchString+"': "+e.getMessage());
+			log(taskMonitor, TaskMonitor.Level.ERROR, 
+			    "Error attempting to fetch '"+fetchString+"': "+e.getMessage());
 		}
 		return input;
 	}
@@ -109,5 +112,23 @@ public class CSVReader {
 			}
 		}
 		return columns;
+	}
+
+	private static void log(TaskMonitor taskMonitor, TaskMonitor.Level level, String message) {
+		if (taskMonitor != null) {
+			taskMonitor.showMessage(level, message);
+			return;
+		}
+		switch (level) {
+			case ERROR:
+				logger.error(message);
+				break;
+			case INFO:
+				logger.info(message);
+				break;
+			case WARN:
+				logger.warn(message);
+				break;
+		}
 	}
 }
