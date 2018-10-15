@@ -34,6 +34,8 @@ public class GXADesign {
 	String[] columns;
 	List<String[]> rows;
 
+	String sortedRow = null;
+
 	public GXADesign(final GXAManager gxaManager, final GXAExperiment experiment) {
 		this.gxaManager = gxaManager;
 		this.experiment = experiment;
@@ -72,6 +74,27 @@ public class GXADesign {
 
 		return gxaDesign;
 	}
+
+	public Map<String,List<String>> getClusterList(String factor) {
+		Map<String, List<String>> clusterMap = new HashMap<>();
+
+		int factorColumn;
+		for (factorColumn = 0; factorColumn < columns.length; factorColumn++) {
+			if (factor.equals(columns[factorColumn]))
+				break;
+		}
+
+		for (String[] row: rows) {
+			String id = row[0];
+			String rowFactor = row[factorColumn];
+			if (!clusterMap.containsKey(rowFactor))
+				clusterMap.put(rowFactor, new ArrayList<>());
+			clusterMap.get(rowFactor).add(id);
+		}
+		return clusterMap;
+	}
+
+	public String getSortedRow() { return sortedRow; }
 
 	public GXADesignTableModel getTableModel() {
 		if (tableModel == null)
@@ -126,6 +149,12 @@ public class GXADesign {
 
 			String[] line = rows.get(column);
 			return strip(line[row+1]);
+		}
+
+		@Override
+		public void sortColumns(int row) {
+			sortedRow = strip(columns[row+1]);
+			super.sortColumns(row);
 		}
 
 		public String strip(String str) {

@@ -5,10 +5,14 @@ import static org.cytoscape.work.ServiceProperties.COMMAND_DESCRIPTION;
 import static org.cytoscape.work.ServiceProperties.COMMAND_NAMESPACE;
 import static org.cytoscape.work.ServiceProperties.ID;
 import static org.cytoscape.work.ServiceProperties.IN_MENU_BAR;
+import static org.cytoscape.work.ServiceProperties.IN_TOOL_BAR;
 import static org.cytoscape.work.ServiceProperties.INSERT_SEPARATOR_BEFORE;
+import static org.cytoscape.work.ServiceProperties.LARGE_ICON_URL;
 import static org.cytoscape.work.ServiceProperties.MENU_GRAVITY;
 import static org.cytoscape.work.ServiceProperties.PREFERRED_MENU;
 import static org.cytoscape.work.ServiceProperties.TITLE;
+import static org.cytoscape.work.ServiceProperties.TOOL_BAR_GRAVITY;
+import static org.cytoscape.work.ServiceProperties.TOOLTIP;
 
 import java.util.Properties;
 
@@ -134,6 +138,11 @@ public class CyActivator extends AbstractCyActivator {
 			Properties gxaShowEntriesProps = new Properties();
 			gxaShowEntriesProps.setProperty(PREFERRED_MENU, "Apps.GXAFetch");
 			gxaShowEntriesProps.setProperty(TITLE, "Show GXA Experiments Table");
+			gxaShowEntriesProps.setProperty(IN_TOOL_BAR, "TRUE");
+			gxaShowEntriesProps.setProperty(TOOL_BAR_GRAVITY, "100f");
+			gxaShowEntriesProps.setProperty(TOOLTIP, "Show GXA Experiments Table");
+			String ebiLogoURL = getClass().getResource("/images/EMBL-EBI-Logo-36x36.png").toString();
+			gxaShowEntriesProps.setProperty(LARGE_ICON_URL, ebiLogoURL);
 			registerService(bc, gxaShowEntries, TaskFactory.class, gxaShowEntriesProps);
 		}
 

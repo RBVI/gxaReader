@@ -1,8 +1,11 @@
 package edu.ucsf.rbvi.gxaReader.internal.model;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -43,6 +46,9 @@ public class GXACluster {
 	// The headers
 	String[] headers;
 
+	// K-sort
+	int sortedK = -1;
+
 	// The Table model
 	GXAClusterTableModel tableModel = null;
 
@@ -61,11 +67,31 @@ public class GXACluster {
 	}
 
 	public int[] getCluster(int kClust) {
-		return clusters[kClust-minK];
+		int ncolumns = clusters.length;
+		System.out.println("ncolumns = "+ncolumns);
+		int[] clustRow = new int[ncolumns];
+		for (int col = 0; col < ncolumns; col++) {
+			clustRow[col] = clusters[col][kClust-minK];
+		}
+		return clustRow;
 	}
 
 	public int getMinK() { return minK; }
 	public int getK() { return k; }
+	public int getSortedK() { return sortedK; }
+
+	public Map<Integer,List<String>> getClusterList(int kClust) {
+		Map<Integer, List<String>> clusterMap = new HashMap<>();
+		int[] clusterArray = getCluster(kClust);
+		for (int i = 0; i < clusterArray.length; i++) {
+			int cluster = clusterArray[i];
+			if (!clusterMap.containsKey(cluster)) {
+				clusterMap.put(cluster, new ArrayList<>());
+			}
+			clusterMap.get(cluster).add(headers[i+2]);
+		}
+		return clusterMap;
+	}
 
 	public static GXACluster fetchCluster(GXAManager gxaManager, String accession, 
 	                                      GXAExperiment experiment, TaskMonitor monitor) {
@@ -154,6 +180,12 @@ public class GXACluster {
 				default:
 					return Integer.class;
 			}
+		}
+
+		@Override
+		public void sortColumns(int row) {
+			sortedK = row+cluster.minK;
+			super.sortColumns(row);
 		}
 
 		@Override

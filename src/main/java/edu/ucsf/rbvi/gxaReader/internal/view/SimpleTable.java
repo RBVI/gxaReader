@@ -22,6 +22,7 @@ import edu.ucsf.rbvi.gxaReader.internal.model.GXASubTableModel;
 public class SimpleTable extends JTable {
 	final GXAManager gxaManager;
 	final GXASubTableModel tableModel;
+	TableFrame tableFrame;
 
 	static Color alternateColor = new Color(234,255,234);
 
@@ -54,11 +55,16 @@ public class SimpleTable extends JTable {
 				if (col != 0) return;
 				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					tableModel.sortColumns(row);
+					tableFrame.enableAggregation();
 				}
 			}
 		});
 
 		doLayout();
+	}
+
+	public void setTableFrame(TableFrame frame) {
+		this.tableFrame = frame;
 	}
 
 	@Override

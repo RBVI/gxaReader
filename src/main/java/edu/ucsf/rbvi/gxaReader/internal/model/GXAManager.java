@@ -11,7 +11,10 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
+import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.command.AvailableCommands;
 import org.cytoscape.command.CommandExecutorTaskFactory;
 import org.cytoscape.service.util.CyServiceRegistrar;
@@ -30,6 +33,7 @@ public class GXAManager {
 	final AvailableCommands availableCommands;
 	final CommandExecutorTaskFactory ceTaskFactory;
 	final TaskManager taskManager;
+	final CySwingApplication swingApplication;
 
 	final Map<String, GXAExperiment> gxaMap;
 	final Map<String, List<GXAEntry>> speciesMap;
@@ -48,6 +52,7 @@ public class GXAManager {
 		this.availableCommands = registrar.getService(AvailableCommands.class);
 		this.ceTaskFactory = registrar.getService(CommandExecutorTaskFactory.class);
 		this.taskManager = registrar.getService(TaskManager.class);
+		this.swingApplication = registrar.getService(CySwingApplication.class);
 	}
 
 	public void addExperiment(GXAEntry entry, GXAExperiment gxa) {
@@ -157,9 +162,18 @@ public class GXAManager {
 	}
 
 	public void showEntriesTable(boolean show) {
-		if (gxaEntryComponent == null && show) {
+		if (gxaEntryComponent == null && !show)
+			return;
+		else if (gxaEntryComponent == null)
 			gxaEntryComponent = new GXAEntryComponent(this);
+
+		if (show) {
 			registrar.registerService(gxaEntryComponent, CytoPanelComponent.class, new Properties());
+			CytoPanel cytoPanel = swingApplication.getCytoPanel(CytoPanelName.SOUTH);
+			int index = cytoPanel.indexOfComponent(gxaEntryComponent.getComponent());
+			cytoPanel.setSelectedIndex(index);
+		} else {
+			registrar.unregisterService(gxaEntryComponent, CytoPanelComponent.class);
 		}
 
 	}

@@ -33,6 +33,7 @@ import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperiment;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAExperimentTableModel;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXAManager;
 import edu.ucsf.rbvi.gxaReader.internal.model.GXASubTableModel;
+import edu.ucsf.rbvi.gxaReader.internal.view.TableFrame.FrameType;
 
 public class GXAExperimentComponent extends JPanel implements CytoPanelComponent2 {
 	final GXAManager gxaManager;
@@ -98,7 +99,7 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 				public void actionPerformed(ActionEvent e) {
 					String title = "Clusters for "+gxaExperiment.getAccession();
 					GXACluster clusters = gxaExperiment.getClusters();
-					showTable(title, clusters.getTableModel(), gxaExperiment);
+					showTable(title, clusters.getTableModel(), gxaExperiment, FrameType.CLUSTER);
 				}
 			});
 			buttonsPanelLeft.add(showClusters);
@@ -111,7 +112,7 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 				public void actionPerformed(ActionEvent e) {
 					String title = "Experimental design for "+gxaExperiment.getAccession();
 					GXADesign design = gxaExperiment.getDesign();
-					showTable(title, design.getTableModel(), gxaExperiment);
+					showTable(title, design.getTableModel(), gxaExperiment, FrameType.DESIGN);
 				}
 			});
 			buttonsPanelLeft.add(showDesign);
@@ -152,9 +153,9 @@ public class GXAExperimentComponent extends JPanel implements CytoPanelComponent
 		this.repaint();
 	}
 
-	public void showTable(String title, GXASubTableModel model, GXAExperiment experiment) {
-		JTable table = new SimpleTable(gxaManager, model);
-		new TableFrame (gxaManager, table, title);
+	public void showTable(String title, GXASubTableModel model, GXAExperiment experiment, FrameType frameType) {
+		SimpleTable table = new SimpleTable(gxaManager, model);
+		new TableFrame (gxaManager, experiment, table, title, frameType);
 	}
 
 }

@@ -16,7 +16,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
+import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
+import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.Task;
@@ -106,6 +109,10 @@ public class GXAEntryTable extends JTable {
 			// Register an Experiment Table
 			CytoPanelComponent component = new GXAExperimentComponent(gxaManager, experiment);
 			gxaManager.registerService(component, CytoPanelComponent.class, new Properties());
+			CytoPanel cytoPanel = gxaManager.getService(CySwingApplication.class).getCytoPanel(CytoPanelName.SOUTH);
+			int index = cytoPanel.indexOfComponent(component.getComponent());
+			cytoPanel.setSelectedIndex(index);
+
 			experiment.fetchClusters();
 			experiment.fetchDesign();
 		}
